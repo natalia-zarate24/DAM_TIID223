@@ -3,7 +3,7 @@
 //   Caja: interfaz para revisar y cobrar pedidos
 // ===================================================
 
-import { cargarPedidos, listarPedidos, calcularTotal, cerrarPedido } from "../Funcionalidad/Pedidos.mjs";
+import { cargarPedidos, listarPedidos, calcularDesglose, cerrarPedido } from "../Funcionalidad/Pedidos.mjs";
 
 function renderizarPedidos() {
     const contenedor = document.getElementById("listaPedidosCaja");
@@ -23,20 +23,24 @@ function renderizarPedidos() {
     }
 
     for (const pedido of pedidos) {
-        const total = calcularTotal(pedido.id);
-        totalGeneral += total;
+        const { subtotal, iva, total } = calcularDesglose(pedido.id);
+        totalGeneralAcumulado += total;
 
         const bloque = document.createElement("div");
         bloque.className = "pedido-caja";
 
         const items = pedido.items
-            .map((item) => `${item.producto.name} x${item.cantidad}`)
+            .map(({ producto: {name}, cantidad}) => `${name} x${cantidad}`)
             .join(", ");
 
         bloque.innerHTML = `
             <p><strong>Pedido #${pedido.id}</strong> — ${pedido.estado}</p>
             <p>${items || "Sin productos"}</p>
-            <p>Total: $${total} MXN</p>
+            <div class="desglose-pedido">
+                <p>Subtotal> $${subtotal.toFixed(2)} MXN</p>
+                <p>IVA (16%): $${iva.toFixed(2)} MXN</p>
+                <p><strong>Total> $${total.toFixed(2)} MXN</strong></p>
+            <div>
             ${
                 pedido.estado === "abierto"
                     ? `<button type="button" data-accion="cobrar" data-id="${pedido.id}">Marcar como pagado</button>`
@@ -47,7 +51,7 @@ function renderizarPedidos() {
         contenedor.appendChild(bloque);
     }
 
-    totalGeneralEl.textContent = `Total acumulado: $${totalGeneral} MXN`;
+    totalGeneralEl.textContent = `Total acumulado: $${totalGeneralAcumulado.toFixed(2)} MXN`;
 }
 
 function manejarClicPedidos(evento) {
