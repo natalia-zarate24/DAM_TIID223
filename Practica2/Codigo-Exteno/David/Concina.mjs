@@ -15,13 +15,16 @@ import {
   guardarProductos,
   cargarProductos,
   sembrarCatalogoInicial,
+  buscarProductosBaratos as obtenerBaratosData,
+  buscarProductosCaros as obtenerCarosData,
+  obtenerBebidas as obtenerBebidasData,
+  obtenerPostres as obtenerPostresData
 } from "./Productos.mjs";
 
 // =============== Agregar producto ===============
 
 // Agregar un nuevo producto a las existencias
 export function agregarProducto(id, name, price, stock, category, tipo) {
-  // Verificar que la categoría exista
   const categoria = existencias.find((cat) => cat.category === category);
 
   if (!categoria) {
@@ -29,7 +32,6 @@ export function agregarProducto(id, name, price, stock, category, tipo) {
     return null;
   }
 
-  // Verificar que el producto no exista
   const productoExistente = buscarProducto(name);
 
   if (productoExistente) {
@@ -121,6 +123,27 @@ export function listarProductos() {
 
   return existencias;
 }
+// ================ filtrado y búsqueda =====================
+
+export function buscarProductosBaratos(umbral = 60) {
+  return obtenerProductosBaratos(umbral);
+}
+
+export function buscarProductosCaros(umbral = 300) {
+  return obtenerProductosCaros(umbral);
+}
+
+export function filtrarBebidas() {
+  return obtenerBebidas();
+}
+
+export function filtrarPostres() {
+  return obtenerPostres();
+}
+
+export function buscarProductoEspecifico(nombre) {
+  return buscarProductoPorNombre(nombre);
+}
 
 // ===================================================
 //        Interfaz de Cocina (manipulación del DOM)
@@ -134,31 +157,82 @@ function calcularSiguienteId() {
   siguienteIdProducto = maxId + 1;
 }
 
-function renderizarTablaProductos() {
+// Función auxiliar para construir el elemento HTML de un producto
+function crearFilaProducto(producto, categoriaNombre) {
+  const fila = document.createElement("div");
+  fila.className = "producto-cocina";
+
+  fila.innerHTML = `
+    <div class="producto-cocina-info">
+        <strong>${producto.name}</strong>
+        <span>${categoriaNombre} · ${producto.tipo}</span>
+        <span>$${producto.price} MXN · Stock: ${producto.stock}</span>
+    </div>
+    <div class="producto-cocina-acciones">
+        <button type="button" data-accion="editar" data-nombre="${producto.name}">Editar</button>
+        <button type="button" data-accion="eliminar" data-nombre="${producto.name}">Eliminar</button>
+    </div>
+  `;
+
+  return fila;
+}
+
+function renderizarTablaProductos(listaFiltrada = null) {
   const contenedor = document.getElementById("listaProductosCocina");
   if (!contenedor) return;
 
   contenedor.innerHTML = "";
 
-  for (const categoria of existencias) {
-    for (const producto of categoria.prods) {
-      const fila = document.createElement("div");
-      fila.className = "producto-cocina";
+  if (listaFiltrada) {
+    if (listaFiltrada.length === 0) {
+      contenedor.innerHTML = "<p>No se encontraron productos que coincidan.</p>";
+      return;
+    }
 
-      fila.innerHTML = `
-                <div class="producto-cocina-info">
-                    <strong>${producto.name}</strong>
-                    <span>${categoria.category} · ${producto.tipo}</span>
-                    <span>$${producto.price} MXN · Stock: ${producto.stock}</span>
-                </div>
-                <div class="producto-cocina-acciones">
-                    <button type="button" data-accion="editar" data-nombre="${producto.name}">Editar</button>
-                    <button type="button" data-accion="eliminar" data-nombre="${producto.name}">Eliminar</button>
-                </div>
-            `;
-
+    for (const producto of listaFiltrada) {
+      const fila = crearFilaProducto(producto, producto.category);
       contenedor.appendChild(fila);
     }
+    return;
+  }
+
+  for (const categoria of existencias) {
+    for (const producto of categoria.prods) {
+      const fila = crearFilaProducto(producto, categoria.category);
+      contenedor.appendChild(fila);
+    }
+  }
+}
+
+
+
+// ===================================================
+//        Interfaz de Cocina (manipulación del DOM)
+// ===================================================
+function conectarFiltrosUI() {
+  const btnBaratos = document.getElementById("btnFiltrarBaratos");
+  const btnCaros = document.getElementById("btnFiltrarCaros");
+  const btnBebidas = document.getElementById("btnFiltrarBebidas");
+  const btnPostres = document.getElementById("btnFiltrarPostres");
+  const btnTodos = document.getElementById("btnMostrarTodos");
+  const inputBusqueda = document.getElementById("inputBuscarProducto");
+
+  if (btnBaratos) btnBaratos.addEventListener("click", () => renderizarTablaProductos(buscarProductosBaratos()));
+  if (btnCaros) btnCaros.addEventListener("click", () => renderizarTablaProductos(buscarProductosCaros()));
+  if (btnBebidas) btnBebidas.addEventListener("click", () => renderizarTablaProductos(filtrarBebidas()));
+  if (btnPostres) btnPostres.addEventListener("click", () => renderizarTablaProductos(filtrarPostres()));
+  if (btnTodos) btnTodos.addEventListener("click", () => renderizarTablaProductos(null));
+
+  if (inputBusqueda) {
+    inputBusqueda.addEventListener("input", (e) => {
+      const termino = e.target.value.trim();
+      if (!termino) {
+        renderizarTablaProductos(null);
+        return;
+      }
+      const resultado = buscarProductoEspecifico(termino);
+      renderizarTablaProductos(resultado ? [resultado] : []);
+    });
   }
 }
 
@@ -224,6 +298,7 @@ export function inicializarCocina() {
   sembrarCatalogoInicial();
   calcularSiguienteId();
   renderizarTablaProductos();
+  conectarFiltrosUI();
 
   const form = document.getElementById("formNuevoProducto");
   const lista = document.getElementById("listaProductosCocina");
