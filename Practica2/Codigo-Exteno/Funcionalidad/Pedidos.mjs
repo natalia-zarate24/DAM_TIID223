@@ -114,7 +114,37 @@ export function quitarProductoDePedido(idPedido, idProducto) {
 
 // =============== Calcular total ===============
 
+// =============== Calcular Desglose (Subtotal, IVA, Total) ===============
+
+export function calcularDesglose(idPedido, tasaIVA = 0.16) {
+    const pedido = buscarPedido(idPedido);
+    if (!pedido || !pedido.items) {
+        return { subtotal: 0, iva: 0, total: 0 };
+    }
+
+    // Usamos reduce() con desestructuración ({ producto, cantidad })
+    //    y sub-desestructuración del objeto producto ({ price })
+    const subtotal = pedido.items.reduce((acumulador, { producto: { price }, cantidad }) => {
+        return acumulador + price * cantidad;
+    }, 0);
+
+    // IVA y total general
+    const iva = subtotal * tasaIVA;
+    const total = subtotal + iva;
+
+    return {
+        subtotal: Number(subtotal.toFixed(2)),
+        iva: Number(iva.toFixed(2)),
+        total: Number(total.toFixed(2))
+    };
+}
+
 export function calcularTotal(idPedido) {
+    const { total } = calcularDesglose(idPedido);
+    return total;
+}
+
+/*export function calcularTotal(idPedido) {
     const pedido = buscarPedido(idPedido);
     if (!pedido) return 0;
 
@@ -122,7 +152,7 @@ export function calcularTotal(idPedido) {
         (total, item) => total + item.producto.price * item.cantidad,
         0
     );
-}
+}*/
 
 
 // =============== Cerrar (cobrar) pedido ===============
