@@ -20,6 +20,7 @@ import {
 } from "../Funcionalidad/Pedidos.mjs";
 
 let pedidoActual = null;
+const esperar = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function obtenerProductosDisponibles(){
   const todos = obtenerProductos();
@@ -53,7 +54,7 @@ export function obtenerMenuDinamico(){
 export function obtenerPromociones() {
   const disponibles = obtenerProductosDisponibles();
 
-  //aplicar un 15% de descuento en categoría bebidas o postres
+  //aplicar un 15% de descuento en categoria bebidas o postres
   return disponibles
     .filter((prod) => prod.category === "Bebidas" || prod.tipo === "Dulce")
     .map((prod) => {
@@ -165,6 +166,40 @@ function renderizarPedidoActual() {
   totalEl.textContent = `Total: $${calcularTotal(pedidoActual.id)} MXN`;
 }
 
+// =============== Asincronia y UI de estados =========================
+
+function actualizarEstadoUI(mensaje, estadoClase =""){
+  let contenedorEstado = document.getElementById("estadoPedidoCliente");
+
+  if (!contenedorEstado){
+    contenedorEstado = document.createElement("div");
+    contenedorEstado.id = "estadoPedidoCliente";
+    contenedorEstado.className = "notificacion-estado";
+    const panelPedido = document.getElementById("listaPedidoCliente");
+    if(panelPedido && panelPedido.parentNode){
+      panelPedido.parentNode.appendChild(contenedorEstado);
+    } else{
+      document.body.appendChild(contenedorEstado);
+    }
+  }
+  contenedorEstado.className = `notificacion-estado ${estadoClase}`;
+  contenedorEstado.innerHTML = `<h4>Estado del Pedido:</h4><p>${mensaje}</p>`;
+}
+
+async function seguimientoPedido(idPedido) {
+  //pedido recibido
+  actualizarEstadoUI(`Pedido #${idPedido} recibido. Enviando a cocina...`, "estado-recibido");
+  await esperar(3000);
+  //preparando pedido
+  actualizarEstadoUI(`Pedido #${idPedido} en preparacion...`, "estado-preparando");
+  await esperar(4000);
+  //empacando pedido
+  actualizarEstadoUI(`Pedido #${idPedido} siendo empacado...`, "estado-empacando");
+  await esperar(3000);
+  //pedido entregado
+  actualizarEstadoUI(`Pedido #${idPedido} entregado! Gracias por su compra.`, "estado-entregado");
+}
+
 // =============== Eventos ===============
 
 function manejarClicCatalogo(evento) {
@@ -190,14 +225,16 @@ function manejarConfirmarPedido() {
     return;
   }
 
-  const total = calcularTotal(pedidoActual.id);
   const idPedido = pedidoActual.id;
+  const total = calcularTotal(idPedido);
 
   cerrarPedido(idPedido);
   alert(`Pedido #${idPedido} enviado a caja. Total: $${total} MXN`);
 
   pedidoActual = null;
   renderizarPedidoActual();
+
+  seguimientoPedido(idPedido);
 }
 
 // Punto de entrada para la pantalla cliente.html
