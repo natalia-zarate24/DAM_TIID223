@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizador de Raster Topográfico</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+
+  <body>
+    <header class="main-header">
+      <div class="header-content">
+        <h1><span>Raster</span> Topográfico</h1>
+        <p>Visualización de mapa de elevación e interpolación de superficie Z</p>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="content">
+        <!-- Panel Lateral de Controles -->
+        <aside class="container-labs">
+          <!-- Modificador Manual de Puntos -->
+          <div class="card">
+            <h2>Editor de Puntos</h2>
+            
+            <div class="input-group">
+              <label>Coordenadas <span class="cg">X</span> e <span class="cg">Y</span> (Grid 10x10)</label>
+              <div class="grid-inputs">
+                <div class="field">
+                  <span class="prefix">X</span>
+                  <input type="number" name="Cordenadax" id="cx" min="1" max="10" value="1" placeholder="1-10" />
+                </div>
+                <div class="field">
+                  <span class="prefix">Y</span>
+                  <input type="number" name="Cordenaday" id="cy" min="1" max="10" value="1" placeholder="1-10" />
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="cz">
+                Coordenada <span class="cg">Z</span> (Elevación / Valor)
+              </label>
+              <div class="field">
+                <span class="prefix">Z</span>
+                <input
+                  type="number"
+                  name="Cordenadaz"
+                  id="cz"
+                  placeholder="Rango: [-99.46 a 99.99]"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" id="btn-add" class="btn btn-primary">
+                Actualizar Punto
+              </button>
+              <button type="button" id="btn-random" class="btn btn-secondary">
+                Randomizar Puntos
+              </button>
+            </div>
+          </div>
+
+          <!-- Generadores Preset de Terreno -->
+          <div class="card">
+            <h2>Generadores de Terreno</h2>
+            <div class="preset-buttons">
+              <button type="button" class="btn-preset" data-preset="island">Isla Topográfica</button>
+              <button type="button" class="btn-preset" data-preset="mountain">Valle y Montaña</button>
+              <button type="button" class="btn-preset" data-preset="crater">Cráter / Volcán</button>
+            </div>
+          </div>
+
+          <!-- Leyenda y Paleta de Colores -->
+          <div class="card">
+            <h2>Leyenda de Elevación (Paleta)</h2>
+            <p class="legend-subtitle">Pasa el cursor sobre un rango para ver detalles:</p>
+            <div class="palette" id="palette-container">
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+              <div class="pal-color"><p>Cargando...</p></div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Contenedor del Grid Canvas (Los 100 Colores/Píxeles) -->
+        <section class="canvas-section">
+          <div class="canvas-header">
+            <h3>Grilla de Renderizado Raster (10 x 10)</h3>
+            <div class="raster-stats">
+              <span>Z Mín: <strong id="stat-zmin">-</strong></span>
+              <span>Z Máx: <strong id="stat-zmax">-</strong></span>
+            </div>
+          </div>
+
+          <div class="container-colors" id="raster-grid">
+            <!-- 100 Píxeles/Celdas -->
+            <div class="color" id="obj1" data-index="1"></div>
+            <div class="color" id="obj2" data-index="2"></div>
+            <div class="color" id="obj3" data-index="3"></div>
+            <div class="color" id="obj4" data-index="4"></div>
+            <div class="color" id="obj5" data-index="5"></div>
+            <div class="color" id="obj6" data-index="6"></div>
+            <div class="color" id="obj7" data-index="7"></div>
+            <div class="color" id="obj8" data-index="8"></div>
+            <div class="color" id="obj9" data-index="9"></div>
+            <div class="color" id="obj10" data-index="10"></div>
+            <div class="color" id="obj11" data-index="11"></div>
+            <div class="color" id="obj12" data-index="12"></div>
+            <div class="color" id="obj13" data-index="13"></div>
+            <div class="color" id="obj14" data-index="14"></div>
+            <div class="color" id="obj15" data-index="15"></div>
+            <div class="color" id="obj16" data-index="16"></div>
+            <div class="color" id="obj17" data-index="17"></div>
+            <div class="color" id="obj18" data-index="18"></div>
+            <div class="color" id="obj19" data-index="19"></div>
+            <div class="color" id="obj20" data-index="20"></div>
+            <div class="color" id="obj21" data-index="21"></div>
+            <div class="color" id="obj22" data-index="22"></div>
+            <div class="color" id="obj23" data-index="23"></div>
+            <div class="color" id="obj24" data-index="24"></div>
+            <div class="color" id="obj25" data-index="25"></div>
+            <div class="color" id="obj26" data-index="26"></div>
+            <div class="color" id="obj27" data-index="27"></div>
+            <div class="color" id="obj28" data-index="28"></div>
+            <div class="color" id="obj29" data-index="29"></div>
+            <div class="color" id="obj30" data-index="30"></div>
+            <div class="color" id="obj31" data-index="31"></div>
+            <div class="color" id="obj32" data-index="32"></div>
+            <div class="color" id="obj33" data-index="33"></div>
+            <div class="color" id="obj34" data-index="34"></div>
+            <div class="color" id="obj35" data-index="35"></div>
+            <div class="color" id="obj36" data-index="36"></div>
+            <div class="color" id="obj37" data-index="37"></div>
+            <div class="color" id="obj38" data-index="38"></div>
+            <div class="color" id="obj39" data-index="39"></div>
+            <div class="color" id="obj40" data-index="40"></div>
+            <div class="color" id="obj41" data-index="41"></div>
+            <div
