@@ -1,15 +1,25 @@
+/* Zona importaciones */
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import {Saludo} from './componentes/Saludo';
+import {Saludo2} from './componentes/Saludo2';
 
+/*Zona main (componentes o screens)*/
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text>Hola Mundo React Native</Text>
+      <Image source={require('./assets/wave.png')}></Image>
+
+      <Saludo/>
+      <Saludo2/>
+
       <StatusBar style="auto" />
     </View>
   );
 }
 
+/*Zona estética*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,
