@@ -13,7 +13,13 @@ export default function App() {
       <Image source={require('./assets/wave.png')}></Image>
       <Saludo/>
       <Saludo2/>
-      <Perfil/>
+
+      <Perfil 
+      nombre="Natalia Zárate" 
+      carrera="ITIID" 
+      materia="Movil" 
+      cuatri="4to"/>
+      
 
       <StatusBar style="auto" />
     </View>
