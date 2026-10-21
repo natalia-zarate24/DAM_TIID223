@@ -6,7 +6,7 @@ export const Perfil= ({nombre, carrera, materia, cuatri, style})=>{
     const[mostrar,setMostrar]= useState(false); 
     return(
         <View style={[estilos.tarjeta,style]}>
-            <Text style={[estilos.nombres,style]}> {nombre} </Text>
+            <Text style={estilos.nombres}> {nombre} </Text>
 
             { mostrar && 
                 <>
