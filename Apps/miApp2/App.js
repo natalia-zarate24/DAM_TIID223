@@ -1,24 +1,34 @@
 /* Zona importaciones */
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import {Saludo} from './componentes/Saludo';
-import {Saludo2} from './componentes/Saludo2';
-import {Perfil} from './componentes/Perfil';
+import { Perfil } from './componentes/Perfil.js';
+
 
 /*Zona main (componentes o screens)*/
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Hola Mundo React Native</Text>
-      <Image source={require('./assets/wave.png')}></Image>
-      <Saludo/>
-      <Saludo2/>
 
       <Perfil 
       nombre="Natalia Zárate" 
       carrera="ITIID" 
       materia="Movil" 
-      cuatri="4to"/>
+      cuatri="4to"
+      style={styles.tarjeta1}/>
+
+      <Perfil 
+      nombre="Roberto Zárate" 
+      carrera="IDIA" 
+      materia="Movil" 
+      cuatri="4to"
+      style={styles.tarjeta2}/>
+
+      <Perfil 
+      nombre="Martha Terán" 
+      carrera="ITIID" 
+      materia="Movil" 
+      cuatri="4to"
+      style={styles.tarjeta3}/>
       
 
       <StatusBar style="auto" />
@@ -31,7 +41,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+
+    flexDirection:'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
   },
+  tarjeta1:{backgroundColor:'#C4F1BE'},
+  tarjeta2:{backgroundColor:'#A2C3A4'},
+  tarjeta3:{backgroundColor:'#869D96'},
 });
