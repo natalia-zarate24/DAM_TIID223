@@ -5,7 +5,7 @@ import SafeScreen from './SafeScreen';
 import PressableScreen from './PressableScreen';
 import TarjetasScreen from './TarjetasScreen';
 import TextInputScreen from './TextInputScreen';
-import FlatListScreen from './FlatListScreen';
+import ScreenFlat from './FlatListScreen';
 import ImageBackgroundScreen from './ImageBackgroundScreen';
 import ModalScreen from './ModalScreen';
 import ActivityIndicatorScreen from './ActivityIndicatorScreen';
