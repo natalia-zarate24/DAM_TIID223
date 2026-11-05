@@ -26,7 +26,7 @@ const CONTACTOS = [
 
 const Separador = () => <View style={styles.separador} />;
 
-// ---------- FlatList + estados ----------
+// ---------- FlatList + estados ----------w
 export function PantallaTareas() {
   const [tareas, setTareas] = useState(TAREAS_INICIALES);
   const [texto, setTexto] = useState('');
