@@ -11,14 +11,12 @@ import {
 export default function ImageBackgroundScreen() {
   
   /* ESTADOS */ 
-  
   const [showSplash, setShowSplash] = useState(true);
   const [blurAmount, setBlurAmount] = useState(0);
 
   const bgMain = { uri: 'https://i.blogs.es/fb2535/hello-orange-2/1366_2000.webp' };
   const logoApp = { uri: 'https://reactnative.dev/img/tiny_logo.png' };
 
- 
   /* SPLASHSCREEN (3 Segundos) */
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,7 +25,6 @@ export default function ImageBackgroundScreen() {
 
     return () => clearTimeout(timer);
   }, []);
-
 
   /* SPLASHSCREEN (Fondo Negro y Cuadro Transparente) */
   if (showSplash) {
